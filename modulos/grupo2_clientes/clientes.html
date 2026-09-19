@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1a0b2e;
+    --cream:#faf1de;
+    --purple:#7c3aed;
+    --purple-dark:#5b21b6;
+    --purple-text:#6d28d9;
+    --orange:#f97316;
+    --orange-dark:#ea580c;
+    --yellow:#fde047;
+    --yellow-dark:#facc15;
+    --teal:#14b8a6;
+    --teal-dark:#0d9488;
+    --vip-bg:#ece3fb;
+    --pink:#db2777;
+    --pink-dark:#be123c;
+    --success:#0d9488;
+    --warning:#d97706;
+    --ink:#241436;
+    --muted:#8b7fa3;
+    --border:#e7ddc4;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1a0b2e; }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Poppins',system-ui,-apple-system,sans-serif;
+    background:var(--bg);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .app-container{
+    width:100%;
+    max-width:900px;
+    background:var(--cream);
+    border-radius:16px;
+    padding:28px;
+    box-shadow:0 30px 60px rgba(0,0,0,.35);
+  }
+  .card-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-bottom:20px;
+    margin-bottom:22px;
+    border-bottom:1px solid var(--border);
+  }
+  .card-header h1{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:22px;
+    font-weight:600;
+    color:var(--purple);
+    margin:0;
+  }
+  .card-header h1 svg{width:24px;height:24px;}
+  .pill-btn{
+    background:#e5fbf7;
+    color:var(--teal-dark);
+    border:none;
+    border-radius:999px;
+    padding:7px 14px;
+    font-size:12.5px;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    cursor:default;
+    font-family:inherit;
+  }
+  .pill-btn svg{width:14px;height:14px;}
+
+  .card-body{
+    display:flex;
+    gap:0;
+    align-items:stretch;
+  }
+  .left-panel{
+    width:230px;
+    flex:none;
+    padding-right:24px;
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+  }
+  .right-panel{
+    flex:1;
+    padding-left:28px;
+    min-height:300px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    position:relative;
+  }
+  label{
+    font-size:12.5px;
+    color:var(--ink);
+    font-weight:500;
+    display:block;
+    margin-bottom:6px;
+  }
+  .doc-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:4px;
+  }
+  select, input[type=text], input[type=tel], input[type=email]{
+    font-family:inherit;
+    font-size:13.5px;
+    border:1px solid #ded6c2;
+    border-radius:8px;
+    padding:9px 10px;
+    background:#fff;
+    color:var(--ink);
+    outline:none;
+  }
+  select{
+    flex:none;
+    width:80px;
+    cursor:pointer;
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    padding-right:26px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236d28d9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 8px center;
+    background-size:14px;
+  }
+  .doc-row input{flex:1;min-width:0;}
+  input:focus, select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.12);}
+  .field-error{
+    color:var(--pink-dark);
+    font-size:11.5px;
+    margin:2px 0 10px 0;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .field-error svg{width:13px;height:13px;flex:none;}
+  .hidden{display:none !important;}
+  .input-error{border-color:var(--pink-dark) !important; background:#fff5f7;}
+
+  .btn{
+    width:100%;
+    border:none;
+    border-radius:9px;
+    padding:11px 14px;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-top:14px;
+    transition:filter .15s ease, transform .05s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn svg{width:16px;height:16px;}
+  .btn-orange{background:var(--orange);color:#3a1300;}
+  .btn-orange:hover{filter:brightness(1.05);}
+  .btn-yellow{background:var(--yellow);color:#3a2e00;}
+  .btn-yellow:hover{filter:brightness(1.03);}
+  .btn-teal{background:var(--teal);color:#003732;}
+  .btn-teal:hover{filter:brightness(1.05);}
+  .btn-cancel{background:#e2ddca;color:#4c452f;}
+  .btn-danger{background:var(--pink);color:#fff;}
+  .btn-danger:hover{filter:brightness(1.05);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-compact{padding:8px 10px;font-size:12px;gap:6px;}
+  .btn-compact svg{width:14px;height:14px;}
+  .btn-row{display:flex;gap:10px;margin-top:18px;}
+  .btn-row .btn{margin-top:0;}
+
+  .left-footer{
+    margin-top:auto;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .link-btn{
+    background:none;
+    border:none;
+    font-family:inherit;
+    color:var(--teal-dark);
+    font-size:12.5px;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    padding:0;
+    text-align:left;
+  }
+  .link-btn svg{width:15px;height:15px;}
+  .link-btn:hover{text-decoration:underline;}
+
+  .empty-state p{
+    color:var(--purple);
+    font-weight:500;
+    font-size:14px;
+    max-width:280px;
+    margin:0;
+  }
+
+  /* Error / not-found card */
+  .error-card{
+    background:linear-gradient(135deg,var(--pink) 0%,var(--pink-dark) 100%);
+    color:#fff;
+    border-radius:14px;
+    padding:22px 24px;
+    width:100%;
+    max-width:360px;
+    text-align:left;
+    box-shadow:0 10px 24px rgba(190,18,60,.25);
+  }
+  .error-card-header{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:16.5px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .error-card-header svg{width:21px;height:21px;flex:none;}
+  .error-card p{margin:4px 0;font-size:13px;opacity:.95;line-height:1.5;}
+
+  /* VIP / result card */
+  .vip-card{
+    background:var(--vip-bg);
+    border-radius:14px;
+    padding:44px 22px 20px 22px;
+    width:100%;
+    max-width:380px;
+    text-align:left;
+    position:relative;
+    box-shadow:0 8px 20px rgba(124,58,237,.12);
+  }
+  .vip-badge{
+    position:absolute;
+    top:14px; left:22px;
+    background:var(--yellow);
+    color:#3a2e00;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    font-weight:600;
+    padding:5px 12px;
+    border-radius:999px;
+  }
+  .vip-badge svg{width:14px;height:14px;}
+  .close-btn{
+    position:absolute;
+    top:14px; right:16px;
+    background:none;
+    border:none;
+    color:var(--purple-text);
+    cursor:pointer;
+    padding:2px;
+  }
+  .close-btn svg{width:17px;height:17px;}
+  .field-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    gap:4px 8px;
+    font-size:13px;
+    color:var(--purple-text);
+    font-weight:500;
+    padding:7px 0;
+  }
+  .field-row svg{width:15px;height:15px;flex:none;margin-top:1px;}
+  .field-row span{
+    margin-left:auto;
+    color:var(--ink);
+    font-weight:500;
+    text-align:right;
+    word-break:break-word;
+    overflow-wrap:anywhere;
+    max-width:100%;
+  }
+  input.edit-input{
+    margin-left:auto;
+    text-align:right;
+    max-width:180px;
+    border:none;
+    border-bottom:1px dashed var(--muted);
+    border-radius:0;
+    background:transparent;
+    padding:0 0 2px 0;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  input.edit-input:focus{
+    border-bottom:1px solid var(--purple);
+    box-shadow:none;
+  }
+  .edit-phone-row{
+    margin-left:auto;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+  .edit-phone-row .edit-input{margin-left:0;max-width:120px;}
+  .prefix-mini{font-size:12px;color:var(--muted);flex:none;}
+
+  .result-wrapper{
+    width:100%;
+    max-width:380px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+  .banner{
+    padding:10px 20px;
+    border-radius:10px;
+    font-size:12.5px;
+    font-weight:600;
+    color:#fff;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    box-shadow:0 8px 18px rgba(0,0,0,.18);
+    transition:opacity .35s ease, transform .35s ease, margin .35s ease, max-height .35s ease, padding .35s ease;
+    max-height:60px;
+    overflow:hidden;
+  }
+  .banner svg{width:15px;height:15px;flex:none;}
+  .banner-success{background:var(--success);}
+  .banner-warning{background:var(--warning);}
+  .banner.fade-out{opacity:0;transform:translateY(-8px);max-height:0;margin-top:-12px;padding-top:0;padding-bottom:0;}
+
+  /* Create form */
+  .create-form{
+    width:100%;
+    max-width:420px;
+    text-align:left;
+  }
+  .create-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .create-header h2{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:16px;
+    color:var(--purple-text);
+    margin:0;
+  }
+  .create-header h2 svg{width:18px;height:18px;}
+  .vip-check{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--yellow);
+    color:#3a2e00;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    margin:0;
+    white-space:nowrap;
+    flex:none;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  .vip-check svg{width:17px;height:17px;flex:none;}
+  .vip-check-inline{position:absolute;top:14px;left:22px;padding:5px 12px;font-size:12px;margin:0;}
+  .vip-check-inline svg{width:14px;height:14px;}
+  .vip-check input{width:16px;height:16px;margin:0;cursor:pointer;accent-color:#3a2e00;flex:none;}
+  .vip-check span{white-space:nowrap;}
+  .create-form label{margin-top:12px;}
+  .readonly-input{background:#efe9d8 !important;color:var(--purple-text);font-weight:500;cursor:not-allowed;}
+  .create-form input:not([type=checkbox]){width:100%;}
+  .phone-row{display:flex;gap:8px;}
+  .prefix{
+    background:#efe9d8;
+    border:1px solid #ded6c2;
+    border-radius:8px;
+    padding:9px 12px;
+    font-size:13.5px;
+    color:var(--muted);
+    font-weight:400;
+    flex:none;
+  }
+  .phone-row input{flex:1;min-width:0;}
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:#fff;
+    padding:11px 20px;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:500;
+    box-shadow:0 10px 24px rgba(0,0,0,.3);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+  .toast svg{width:15px;height:15px;}
+
+  @media (max-width:640px){
+    .card-body{flex-direction:column;}
+    .left-panel{width:100%;border-right:none;border-bottom:1px solid var(--border);padding-right:0;padding-bottom:18px;margin-bottom:18px;}
+    .right-panel{padding-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="card-header">
+      <h1>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z"/><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg>
+        Clientes
+      </h1>
+      <button class="pill-btn" id="roleModeBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h1.5"/><path d="M15 19l2 2l4 -4"/></svg>
+        <span id="roleModeText">Modo vendedor</span>
+      </button>
+    </div>
+
+    <div class="card-body">
+      <div class="left-panel">
+        <label>Documento de Identidad</label>
+        <div class="doc-row">
+          <select id="docType">
+            <option>C.C.</option>
+            <option>C.E.</option>
+            <option>T.I.</option>
+            <option>Pasaporte</option>
+          </select>
+          <input id="docNumber" type="text" inputmode="numeric" placeholder="1.234.567.890" maxlength="13">
+        </div>
+        <div class="field-error hidden" id="errDoc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          <span id="errDocText">Ingresa un número de documento</span>
+        </div>
+
+        <button class="btn btn-orange" onclick="handleBuscar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6 -6"/></svg>
+          Buscar
+        </button>
+        <button class="btn btn-yellow" onclick="handleCrearClienteBtn()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>
+          Crear Cliente
+        </button>
+
+        <div class="left-footer">
+          <button class="link-btn" onclick="handleExport()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 11l5 5l5 -5"/><path d="M12 4v12"/></svg>
+            Exportar
+          </button>
+        </div>
+      </div>
+
+      <div class="right-panel" id="rightPanel"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span id="toastMsg"></span></div>
+
+<script>
+/* ---------- Rol recibido desde index.html (query param ?role=admin|seller) ---------- */
+const currentRole = new URLSearchParams(window.location.search).get('role') || 'seller';
+document.getElementById('roleModeText').textContent = currentRole === 'admin' ? 'Modo administrador' : 'Modo vendedor';
+
+/* ---------- "Base de datos" simulada ---------- */
+let clientsDB = {
+  "1234567890": { docType:"C.C.", idDisplay:"1.023.456.789", nombre:"Pepito Pérez", celular:"+57 312 456 7890", correo:"pepitoperez@mail.com", vip:true }
+};
+
+const rightPanel = document.getElementById('rightPanel');
+const docNumberInput = document.getElementById('docNumber');
+const errDoc = document.getElementById('errDoc');
+
+/* ---------- Helpers de formato ---------- */
+function onlyDigits(str){ return (str || '').replace(/\D/g,''); }
+
+function formatWithDots(digits){
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function formatPhone(digits){
+  let out = digits.slice(0,3);
+  if (digits.length > 3) out += ' ' + digits.slice(3,6);
+  if (digits.length > 6) out += ' ' + digits.slice(6,10);
+  return out;
+}
+
+docNumberInput.addEventListener('input', (e)=>{
+  const digits = onlyDigits(e.target.value).slice(0,10);
+  e.target.value = formatWithDots(digits);
+  errDoc.classList.add('hidden');
+  docNumberInput.classList.remove('input-error');
+});
+
+function currentDigits(){ return onlyDigits(docNumberInput.value); }
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> toast.classList.remove('show'), 2600);
+}
+
+/* ---------- Render: estado vacío ---------- */
+function renderEmpty(){
+  rightPanel.innerHTML = `
+    <div class="empty-state">
+      <p>Ingresa el tipo y número de documento del cliente para comenzar</p>
+    </div>`;
+}
+
+/* ---------- Render: cliente no encontrado ---------- */
+function renderNotFound(idText){
+  rightPanel.innerHTML = `
+    <div class="error-card">
+      <div class="error-card-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        Cliente no encontrado
+      </div>
+      <p>No hay ningún cliente con id ${idText}</p>
+      <p>Puedes crear uno nuevo</p>
+      <div class="btn-row">
+        <button class="btn btn-cancel" onclick="renderEmpty()">Cancelar</button>
+        <button class="btn btn-yellow" onclick="openCreateForm('${idText}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>
+          Crear Cliente
+        </button>
+      </div>
+    </div>`;
+}
+
+/* ---------- Render: tarjeta de cliente (resultado) ---------- */
+function renderFound(client, banner, clientId){
+  const isAdmin = currentRole === 'admin';
+
+  let bannerHTML = '';
+  if (banner === 'created'){
+    bannerHTML = `<div class="banner banner-success" id="tempBanner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
+      Cliente creado con éxito</div>`;
+  } else if (banner === 'exists'){
+    bannerHTML = `<div class="banner banner-warning" id="tempBanner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      Este cliente ya existe</div>`;
+  } else if (banner === 'updated'){
+    bannerHTML = `<div class="banner banner-success" id="tempBanner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
+      Cliente actualizado con éxito</div>`;
+  }
+
+  const vipBadge = isAdmin
+    ? `<label class="vip-check vip-check-inline">
+        <input type="checkbox" id="editVip" ${client.vip ? 'checked' : ''}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.75l-6.16 3.24l1.18 -6.88l-5 -4.87l6.9 -1l3.08 -6.26l3.08 6.26l6.9 1l-5 4.87l1.18 6.88z"/></svg>
+        <span>Cliente VIP</span>
+      </label>`
+    : (client.vip ? `<div class="vip-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.75l-6.16 3.24l1.18 -6.88l-5 -4.87l6.9 -1l3.08 -6.26l3.08 6.26l6.9 1l-5 4.87l1.18 6.88z"/></svg>
+        Cliente VIP</div>` : '');
+
+  const nombreField = isAdmin
+    ? `<input class="edit-input" id="editNombre" type="text" value="${client.nombre}">`
+    : `<span>${client.nombre}</span>`;
+  const celularLocalDigits = onlyDigits(client.celular).slice(-10);
+  const celularField = isAdmin
+    ? `<span class="edit-phone-row">
+        <span class="prefix-mini">+57</span>
+        <input class="edit-input" id="editCelular" type="tel" inputmode="numeric" value="${formatPhone(celularLocalDigits)}" maxlength="12">
+      </span>`
+    : `<span>${client.celular}</span>`;
+  const correoField = isAdmin
+    ? `<input class="edit-input" id="editCorreo" type="email" value="${client.correo}">`
+    : `<span>${client.correo}</span>`;
+
+  const actionsHTML = isAdmin
+    ? `<div class="field-error hidden" id="errEdit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <span id="errEditText">Revisa los datos ingresados</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-compact btn-teal" onclick="handleSaveEdit('${clientId}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
+          Guardar
+        </button>
+        <button class="btn btn-compact btn-danger" onclick="handleDeleteClient('${clientId}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>
+          Eliminar
+        </button>
+      </div>`
+    : `<button class="btn btn-orange" onclick="renderEmpty()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
+        Aceptar
+      </button>`;
+
+  rightPanel.innerHTML = `
+    <div class="result-wrapper">
+      ${bannerHTML}
+      <div class="vip-card">
+        ${vipBadge}
+        <button class="close-btn" onclick="renderEmpty()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+        </button>
+        <div class="field-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+          Nombre ${nombreField}
+        </div>
+        <div class="field-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"/><path d="M7 15v-6h1.3a1.4 1.4 0 1 1 0 2.8h-1.3"/><path d="M12 9v6"/><path d="M16 9h1.4a1.3 1.3 0 1 1 0 2.6h-1.4v3.4"/></svg>
+          ID <span>${client.idDisplay}</span>
+        </div>
+        <div class="field-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/></svg>
+          Celular ${celularField}
+        </div>
+        <div class="field-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"/><path d="M3 7l9 6l9 -6"/></svg>
+          Correo ${correoField}
+        </div>
+        ${actionsHTML}
+      </div>
+    </div>`;
+
+  if (bannerHTML){
+    setTimeout(()=>{
+      const b = document.getElementById('tempBanner');
+      if (b){
+        b.classList.add('fade-out');
+        setTimeout(()=> b.remove(), 400);
+      }
+    }, 3000);
+  }
+}
+
+/* ---------- Edición y eliminación (solo administrador) ---------- */
+function handleSaveEdit(clientId){
+  const client = clientsDB[clientId];
+  if (!client) return;
+
+  const editNombre = document.getElementById('editNombre');
+  const editCelular = document.getElementById('editCelular');
+  const editCorreo = document.getElementById('editCorreo');
+  const editVip = document.getElementById('editVip');
+
+  const nombre = editNombre.value.trim();
+  const correo = editCorreo.value.trim();
+  const celDigits = onlyDigits(editCelular.value);
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/;
+  const errEdit = document.getElementById('errEdit');
+  const errEditText = document.getElementById('errEditText');
+
+  if (nombre.length < 3){
+    errEditText.textContent = 'Ingresa el nombre completo';
+    errEdit.classList.remove('hidden');
+    editNombre.classList.add('input-error');
+    editNombre.focus();
+    return;
+  }
+  if (!emailRegex.test(correo)){
+    errEditText.textContent = 'Ingresa un correo electrónico válido';
+    errEdit.classList.remove('hidden');
+    editCorreo.classList.add('input-error');
+    editCorreo.focus();
+    return;
+  }
+  if (!/^3\d{9}$/.test(celDigits)){
+    errEditText.textContent = 'Ingresa un celular válido de 10 dígitos, debe empezar por 3';
+    errEdit.classList.remove('hidden');
+    editCelular.classList.add('input-error');
+    editCelular.focus();
+    return;
+  }
+
+  client.nombre = nombre;
+  client.correo = correo;
+  client.celular = '+57 ' + formatPhone(celDigits);
+  client.vip = editVip.checked;
+
+  renderFound(client, 'updated', clientId);
+}
+
+function handleDeleteClient(clientId){
+  const client = clientsDB[clientId];
+  if (!client) return;
+
+  const confirmado = window.confirm(`¿Seguro que deseas eliminar a ${client.nombre}? Esta acción no se puede deshacer.`);
+  if (!confirmado) return;
+
+  delete clientsDB[clientId];
+  docNumberInput.value = '';
+  showToast('Cliente eliminado');
+  renderEmpty();
+}
+
+/* ---------- Render: formulario de creación ---------- */
+function openCreateForm(idText){
+  rightPanel.innerHTML = `
+    <div class="create-form">
+      <div class="create-header">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>
+          Nuevo cliente
+        </h2>
+        <label class="vip-check">
+          <input type="checkbox" id="vipCheck">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.75l-6.16 3.24l1.18 -6.88l-5 -4.87l6.9 -1l3.08 -6.26l3.08 6.26l6.9 1l-5 4.87l1.18 6.88z"/></svg>
+          <span>Cliente VIP</span>
+        </label>
+      </div>
+
+      <label>ID cliente</label>
+      <input id="formId" type="text" inputmode="numeric" value="${idText}" maxlength="13" class="readonly-input">
+      <div class="field-error hidden" id="errFormId">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <span>El ID debe tener entre 6 y 10 dígitos</span>
+      </div>
+
+      <label>Nombre Completo</label>
+      <input id="formNombre" type="text" placeholder="Nombre y apellido">
+      <div class="field-error hidden" id="errNombre">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <span>Ingresa el nombre completo</span>
+      </div>
+
+      <label>Correo electrónico</label>
+      <input id="formCorreo" type="email" placeholder="example@mail.com">
+      <div class="field-error hidden" id="errCorreo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <span>Ingresa un correo electrónico válido</span>
+      </div>
+
+      <label>Celular</label>
+      <div class="phone-row">
+        <span class="prefix">+57</span>
+        <input id="formCelular" type="tel" inputmode="numeric" placeholder="300 123 4567" maxlength="12">
+      </div>
+      <div class="field-error hidden" id="errCelular">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <span>Ingresa un celular válido de 10 dígitos, debe empezar por 3</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-cancel" onclick="renderEmpty()">Cancelar</button>
+        <button class="btn btn-teal" onclick="handleCreateSubmit()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>
+          Crear Cliente
+        </button>
+      </div>
+    </div>`;
+
+  const formId = document.getElementById('formId');
+  const formCelular = document.getElementById('formCelular');
+  const formCorreo = document.getElementById('formCorreo');
+  const formNombre = document.getElementById('formNombre');
+
+  formId.addEventListener('input', (e)=>{
+    const digits = onlyDigits(e.target.value).slice(0,10);
+    e.target.value = formatWithDots(digits);
+    document.getElementById('errFormId').classList.add('hidden');
+    formId.classList.remove('input-error');
+  });
+
+  formCelular.addEventListener('input', (e)=>{
+    const digits = onlyDigits(e.target.value).slice(0,10);
+    e.target.value = formatPhone(digits);
+    document.getElementById('errCelular').classList.add('hidden');
+    formCelular.classList.remove('input-error');
+  });
+
+  formCorreo.addEventListener('input', ()=>{
+    document.getElementById('errCorreo').classList.add('hidden');
+    formCorreo.classList.remove('input-error');
+  });
+
+  formNombre.addEventListener('input', ()=>{
+    document.getElementById('errNombre').classList.add('hidden');
+    formNombre.classList.remove('input-error');
+  });
+}
+
+/* ---------- Validación y envío del formulario ---------- */
+function handleCreateSubmit(){
+  const formId = document.getElementById('formId');
+  const formNombre = document.getElementById('formNombre');
+  const formCorreo = document.getElementById('formCorreo');
+  const formCelular = document.getElementById('formCelular');
+  const vipCheck = document.getElementById('vipCheck');
+
+  let valid = true;
+  let firstInvalid = null;
+
+  const idDigits = onlyDigits(formId.value);
+  if (idDigits.length < 6 || idDigits.length > 10){
+    setFieldError(formId, 'errFormId');
+    valid = false; firstInvalid = firstInvalid || formId;
+  }
+
+  if (formNombre.value.trim().length < 3){
+    setFieldError(formNombre, 'errNombre');
+    valid = false; firstInvalid = firstInvalid || formNombre;
+  }
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/;
+  if (!emailRegex.test(formCorreo.value.trim())){
+    setFieldError(formCorreo, 'errCorreo');
+    valid = false; firstInvalid = firstInvalid || formCorreo;
+  }
+
+  const celDigits = onlyDigits(formCelular.value);
+  if (!/^3\d{9}$/.test(celDigits)){
+    setFieldError(formCelular, 'errCelular');
+    valid = false; firstInvalid = firstInvalid || formCelular;
+  }
+
+  if (!valid){
+    if (firstInvalid) firstInvalid.focus();
+    return;
+  }
+
+  const client = {
+    docType: document.getElementById('docType').value,
+    idDisplay: formatWithDots(idDigits),
+    nombre: formNombre.value.trim(),
+    celular: '+57 ' + formatPhone(celDigits),
+    correo: formCorreo.value.trim(),
+    vip: vipCheck.checked
+  };
+
+  clientsDB[idDigits] = client;
+  docNumberInput.value = formatWithDots(idDigits);
+  renderFound(client, 'created', idDigits);
+}
+
+function setFieldError(inputEl, errId){
+  inputEl.classList.add('input-error');
+  document.getElementById(errId).classList.remove('hidden');
+}
+
+/* ---------- Acciones principales ---------- */
+function showDocError(msg){
+  document.getElementById('errDocText').textContent = msg;
+  errDoc.classList.remove('hidden');
+  docNumberInput.classList.add('input-error');
+  docNumberInput.focus();
+}
+
+function handleBuscar(){
+  const digits = currentDigits();
+  if (!digits){
+    showDocError('Ingresa un número de documento');
+    return;
+  }
+  if (digits.length < 6 || digits.length > 10){
+    showDocError('El documento debe tener entre 6 y 10 dígitos');
+    return;
+  }
+  errDoc.classList.add('hidden');
+  docNumberInput.classList.remove('input-error');
+
+  const client = clientsDB[digits];
+  if (client){
+    renderFound(client, null, digits);
+  } else {
+    renderNotFound(formatWithDots(digits));
+  }
+}
+
+function handleCrearClienteBtn(){
+  const digits = currentDigits();
+
+  if (digits && (digits.length < 6 || digits.length > 10)){
+    showDocError('El documento debe tener entre 6 y 10 dígitos');
+    return;
+  }
+  if (digits && clientsDB[digits]){
+    renderFound(clientsDB[digits], 'exists', digits);
+    return;
+  }
+  openCreateForm(digits ? formatWithDots(digits) : '');
+}
+
+/* ---------- Exportar clientes a CSV ---------- */
+function csvEscape(value){
+  const str = String(value ?? '');
+  if (/[",\r\n]/.test(str)){
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+function handleExport(){
+  const entries = Object.entries(clientsDB);
+  if (entries.length === 0){
+    showToast('No hay clientes para exportar');
+    return;
+  }
+
+  const headers = ['Documento', 'Tipo de Documento', 'Nombre', 'Celular', 'Correo', 'VIP'];
+  const rows = entries.map(([id, client]) => [
+    id,
+    client.docType,
+    client.nombre,
+    client.celular,
+    client.correo,
+    client.vip ? 'Si' : 'No'
+  ]);
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(csvEscape).join(','))
+    .join('\r\n');
+
+  const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `clientes_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  showToast('Clientes exportados a CSV');
+}
+
+/* ---------- Estado inicial ---------- */
+renderEmpty();
+</script>
+</body>
+</html>
