@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,7 +46,7 @@
             background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             width: 350px;
             text-align: center;
         }
@@ -67,7 +68,8 @@
             font-size: 0.9rem;
         }
 
-        .form-group input, .form-group select {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -136,7 +138,8 @@
             transition: all 0.3s;
         }
 
-        .sidebar-menu a:hover, .sidebar-menu a.active {
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
             background-color: #1e282c;
             color: white;
         }
@@ -201,10 +204,11 @@
             border: none;
             background: white;
             border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
+
 <body>
 
     <!-- ================= PANTALLA DE LOGIN ================= -->
@@ -224,8 +228,8 @@
                 <div class="form-group">
                     <label for="roleSelect">Rol de Usuario:</label>
                     <select id="roleSelect">
-                        <option value="admin" onclick=saveAdmin()>Administrador</option>
-                        <option value="seller" onclick=saveSeller()>Vendedor</option>
+                        <option value="admin">Administrador</option>
+                        <option value="seller">Vendedor</option>
                     </select>
                 </div>
                 <button type="submit" class="btn-primary" id="btnLogin">Ingresar</button>
@@ -240,11 +244,13 @@
             <div>
                 <div class="sidebar-brand">Panel General</div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" onclick="loadModuleProducts('productos', this, rol === 'admin' ? 'admin' :'seller')" class="active">📦 Módulo de Productos</a></li>
+                    <li><a href="#" onclick="loadModuleProducts(this, rol === 'admin' ? 'admin' :'seller')"
+                            class="active">📦 Módulo de Productos</a></li>
                     <li><a href="#" onclick="loadModule('clientes', this)">👥 Módulo de Clientes</a></li>
                     <li><a href="#" onclick="loadModule('ventas', this)">🛒 Módulo de Ventas</a></li>
                     <!-- Elemento exclusivo para Administrador -->
-                    <li id="menuAdminOnly"><a href="#" onclick="loadModule('reportes', this)">📊 Reportes y Auditoría</a></li>
+                    <li id="menuAdminOnly"><a href="#" onclick="loadModule('reportes', this)">📊 Reportes y
+                            Auditoría</a></li>
                 </ul>
             </div>
             <div class="user-info">
@@ -262,30 +268,26 @@
             </header>
             <div class="content-body">
                 <!-- Aquí se cargarán los index.html de cada grupo (Grupo 1, Grupo 2, Grupo 3) -->
-                <iframe id="moduleFrame" class="module-frame" src="productos/index.html"></iframe>
+                <iframe id="moduleFrame" class="module-frame"
+                    src="modulos/grupo1_productos/modulo_productos_admin.html"></iframe>
             </div>
         </div>
     </div>
 
     <script>
 
-        function saveAdmin () {
-            const rol = "admin"
-        }
-
-         function saveSeller () {
-            const rol = "seller"
-        }
+        let rol = 'Admin'
 
         // Lógica de Autenticación y Control de Roles
         function handleLogin(event) {
             event.preventDefault();
             const user = document.getElementById('username').value;
             const role = document.getElementById('roleSelect').value;
+            rol = document.getElementById('roleSelect').value;
 
             // Actualizar textos en el dashboard
             document.getElementById('displayUser').innerText = `Usuario: ${user}`;
-            
+
             const roleLabel = role === 'admin' ? 'Administrador' : 'Vendedor';
             document.getElementById('displayRole').innerText = `Rol: ${roleLabel}`;
 
@@ -300,9 +302,9 @@
             // Cambiar de pantalla (Login -> Dashboard)
             document.getElementById('login-screen').classList.remove('active');
             document.getElementById('dashboard-screen').classList.add('active');
-            
+
             // Cargar por defecto el módulo de productos
-            loadModule('productos', document.querySelector('.sidebar-menu a'));
+            loadModuleProducts(this, rol === 'admin' ? 'admin' : 'seller');
         }
 
         function handleLogout() {
@@ -312,21 +314,43 @@
             document.getElementById('login-screen').classList.add('active');
         }
 
+        // Lógica de integración del módulo de productos
+        function loadModuleProducts(element, rol) {
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            if (element) element.classList.add('active');
+
+            const frame = document.getElementById('moduleFrame');
+            const title = document.getElementById('moduleTitle');
+
+            switch (rol) {
+                case 'admin':
+                    title.innerText = "Módulo de Productos";
+                    frame.src = "modulos/grupo1_productos/modulo_productos_admin.html";
+                    break;
+                case 'seller':
+                    title.innerText = "Módulo de Productos";
+                    frame.src = "modulos/grupo1_productos/modulo_productos_vendedor.html";
+                    break;
+                default:
+                    frame.src = "";
+            }
+        }
+
         // Lógica de integración de los submódulos de los grupos
         function loadModule(moduleName, element) {
             // Actualizar clases activas en el menú lateral
             document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-            if(element) element.classList.add('active');
+            if (element) element.classList.add('active');
 
             const frame = document.getElementById('moduleFrame');
             const title = document.getElementById('moduleTitle');
 
             // Mapeo de carpetas de los grupos para la integración con Git
-            switch(moduleName) {
-                case 'productos':
-                    title.innerText = "Módulo de Productos (Grupo 1)";
-                    frame.src = "modulos/grupo1_productos/index.html"; 
-                    break;
+            switch (moduleName) {
+                // case 'productos':
+                //     title.innerText = "Módulo de Productos (Grupo 1)";
+                //     frame.src = "modulos/grupo1_productos/index.html"; 
+                //     break;
                 case 'clientes':
                     title.innerText = "Módulo de Clientes (Grupo 2)";
                     frame.src = "modulos/grupo2_clientes/index.html";
@@ -344,32 +368,7 @@
             }
         }
 
-            // Lógica de integración del módulo de productos
-        function loadModuleProducts( element, rol) {
-            // Actualizar clases activas en el menú lateral
-            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-            if(element) element.classList.add('active');
-
-            const frame = "modulos/grupo1_productos/index.html"; 
-            const title = document.getElementById('moduleTitle');
-
-            // Mapeo de carpetas de los grupos para la integración con Git
-            switch(rol) {
-                case 'admin':
-                    title.innerText = "Módulo de Productos";
-                    frame.src = "modulos/grupo1_productos/modulo_productos_admin.html"; 
-                    break;
-                case 'seller':
-                    title.innerText = "Módulo de Productos";
-                    frame.src = "modulos/grupo1_productos/modulo_productos_vendedor.html";
-                    break;
-                default:
-                    frame.src = "";
-            }
-        }
-
-    
-
     </script>
 </body>
+
 </html>
