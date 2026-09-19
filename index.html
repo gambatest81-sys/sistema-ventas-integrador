@@ -269,10 +269,13 @@
 
     <script>
         // Lógica de Autenticación y Control de Roles
+        let currentRole = 'admin'; // Rol activo, compartido con los módulos cargados en el iframe
+
         function handleLogin(event) {
             event.preventDefault();
             const user = document.getElementById('username').value;
             const role = document.getElementById('roleSelect').value;
+            currentRole = role;
 
             // Actualizar textos en el dashboard
             document.getElementById('displayUser').innerText = `Usuario: ${user}`;
@@ -320,7 +323,7 @@
                     break;
                 case 'clientes':
                     title.innerText = "Módulo de Clientes (Grupo 2)";
-                    frame.src = "modulos/grupo2_clientes/index.html";
+                    frame.src = "modulos/grupo2_clientes/clientes.html?role=" + currentRole;
                     break;
                 case 'ventas':
                     title.innerText = "Módulo de Ventas e Integración (Grupo 3)";
