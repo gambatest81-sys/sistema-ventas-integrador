@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Integral de Ventas - Panel Principal</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #28a745;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Control de pantallas principales (Login vs Dashboard) */
+        .app-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .app-screen.active {
+            display: flex;
+        }
+
+        /* --- ESTILOS DE LA PANTALLA DE LOGIN --- */
+        #login-screen {
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0056b3, #003d82);
+        }
+
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 350px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #004085;
+        }
+
+        /* --- ESTILOS DEL DASHBOARD PRINCIPAL --- */
+        #dashboard-screen {
+            flex-direction: row;
+        }
+
+        /* Barra Lateral (Sidebar) */
+        sidebar {
+            width: var(--sidebar-width);
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .sidebar-brand {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 1px solid #455d7a;
+            padding-bottom: 15px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            color: #b8c7ce;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: #1e282c;
+            color: white;
+        }
+
+        .user-info {
+            font-size: 0.85rem;
+            border-top: 1px solid #455d7a;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-logout {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-logout:hover {
+            background-color: #c82333;
+        }
+
+        /* Contenido Principal (Área de módulos de los estudiantes) */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
+
+        header {
+            background-color: white;
+            padding: 15px 30px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            margin: 0;
+            color: #333;
+        }
+
+        .content-body {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+        }
+
+        /* Contenedor iframe o vista dinámica para integrar los submódulos */
+        .module-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= PANTALLA DE LOGIN ================= -->
+    <div id="login-screen" class="app-screen active">
+        <div class="login-card">
+            <h2>Sistema de Ventas</h2>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">Control de Acceso Institucional</p>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Usuario:</label>
+                    <input type="text" id="username" placeholder="Ingrese su usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label for="roleSelect">Rol de Usuario:</label>
+                    <select id="roleSelect">
+                        <option value="admin">Administrador</option>
+                        <option value="seller">Vendedor</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary" id="btnLogin">Ingresar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= DASHBOARD PRINCIPAL ================= -->
+    <div id="dashboard-screen" class="app-screen">
+        <!-- Barra Lateral de Navegación -->
+        <sidebar>
+            <div>
+                <div class="sidebar-brand">Panel General</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" onclick="loadModule('productos', this)" class="active">📦 Módulo de Productos</a></li>
+                    <li><a href="#" onclick="loadModule('clientes', this)">👥 Módulo de Clientes</a></li>
+                    <li><a href="#" onclick="loadModule('ventas', this)">🛒 Módulo de Ventas</a></li>
+                    <!-- Elemento exclusivo para Administrador -->
+                    <li id="menuAdminOnly"><a href="#" onclick="loadModule('reportes', this)">📊 Reportes y Auditoría</a></li>
+                </ul>
+            </div>
+            <div class="user-info">
+                <span id="displayUser">Usuario: Admin</span>
+                <span id="displayRole" style="color: #2ecc71; font-weight: bold;">Rol: Administrador</span>
+                <button class="btn-logout" onclick="handleLogout()">Cerrar Sesión</button>
+            </div>
+        </sidebar>
+
+        <!-- Contenido y Carga de Módulos de los Estudiantes -->
+        <div class="main-content">
+            <header>
+                <h1 id="moduleTitle">Gestión de Productos</h1>
+                <span style="font-size: 0.9rem; color: #666;">Proyecto Integrador - Ingeniería de Sistemas</span>
+            </header>
+            <div class="content-body">
+                <!-- Aquí se cargarán los index.html de cada grupo (Grupo 1, Grupo 2, Grupo 3) -->
+                <iframe id="moduleFrame" class="module-frame" src="productos/index.html"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de Autenticación y Control de Roles
+        function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('username').value;
+            const role = document.getElementById('roleSelect').value;
+
+            // Actualizar textos en el dashboard
+            document.getElementById('displayUser').innerText = `Usuario: ${user}`;
+            
+            const roleLabel = role === 'admin' ? 'Administrador' : 'Vendedor';
+            document.getElementById('displayRole').innerText = `Rol: ${roleLabel}`;
+
+            // Control de restricciones no funcionales (Rendimiento/Seguridad por Rol)
+            const adminMenu = document.getElementById('menuAdminOnly');
+            if (role === 'admin') {
+                adminMenu.style.display = 'block';
+            } else {
+                adminMenu.style.display = 'none'; // El vendedor no ve reportes gerenciales/administrativos
+            }
+
+            // Cambiar de pantalla (Login -> Dashboard)
+            document.getElementById('login-screen').classList.remove('active');
+            document.getElementById('dashboard-screen').classList.add('active');
+            
+            // Cargar por defecto el módulo de productos
+            loadModule('productos', document.querySelector('.sidebar-menu a'));
+        }
+
+        function handleLogout() {
+            // Limpiar formulario y regresar al login
+            document.getElementById('loginForm').reset();
+            document.getElementById('dashboard-screen').classList.remove('active');
+            document.getElementById('login-screen').classList.add('active');
+        }
+
+        // Lógica de integración de los submódulos de los grupos
+        function loadModule(moduleName, element) {
+            // Actualizar clases activas en el menú lateral
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            const frame = document.getElementById('moduleFrame');
+            const title = document.getElementById('moduleTitle');
+
+            // Mapeo de carpetas de los grupos para la integración con Git
+            switch(moduleName) {
+                case 'productos':
+                    title.innerText = "Módulo de Productos (Grupo 1)";
+                    frame.src = "modulos/grupo1_productos/index.html"; 
+                    break;
+                case 'clientes':
+                    title.innerText = "Módulo de Clientes (Grupo 2)";
+                    frame.src = "modulos/grupo2_clientes/index.html";
+                    break;
+                case 'ventas':
+                    title.innerText = "Módulo de Ventas e Integración (Grupo 3)";
+                    frame.src = "modulos/grupo3_ventas/index.html";
+                    break;
+                case 'reportes':
+                    title.innerText = "Reportes y Auditoría del Sistema";
+                    frame.src = "modulos/admin_reportes.html";
+                    break;
+                default:
+                    frame.src = "";
+            }
+        }
+    </script>
+</body>
+</html>
