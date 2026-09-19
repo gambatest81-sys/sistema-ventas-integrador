@@ -224,8 +224,8 @@
                 <div class="form-group">
                     <label for="roleSelect">Rol de Usuario:</label>
                     <select id="roleSelect">
-                        <option value="admin">Administrador</option>
-                        <option value="seller">Vendedor</option>
+                        <option value="admin" onclick=saveAdmin()>Administrador</option>
+                        <option value="seller" onclick=saveSeller()>Vendedor</option>
                     </select>
                 </div>
                 <button type="submit" class="btn-primary" id="btnLogin">Ingresar</button>
@@ -240,7 +240,7 @@
             <div>
                 <div class="sidebar-brand">Panel General</div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" onclick="loadModule('productos', this)" class="active">📦 Módulo de Productos</a></li>
+                    <li><a href="#" onclick="loadModuleProducts('productos', this, rol === 'admin' ? 'admin' :'seller')" class="active">📦 Módulo de Productos</a></li>
                     <li><a href="#" onclick="loadModule('clientes', this)">👥 Módulo de Clientes</a></li>
                     <li><a href="#" onclick="loadModule('ventas', this)">🛒 Módulo de Ventas</a></li>
                     <!-- Elemento exclusivo para Administrador -->
@@ -268,6 +268,15 @@
     </div>
 
     <script>
+
+        function saveAdmin () {
+            const rol = "admin"
+        }
+
+         function saveSeller () {
+            const rol = "seller"
+        }
+
         // Lógica de Autenticación y Control de Roles
         function handleLogin(event) {
             event.preventDefault();
@@ -334,6 +343,33 @@
                     frame.src = "";
             }
         }
+
+            // Lógica de integración del módulo de productos
+        function loadModuleProducts( element, rol) {
+            // Actualizar clases activas en el menú lateral
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            const frame = "modulos/grupo1_productos/index.html"; 
+            const title = document.getElementById('moduleTitle');
+
+            // Mapeo de carpetas de los grupos para la integración con Git
+            switch(rol) {
+                case 'admin':
+                    title.innerText = "Módulo de Productos";
+                    frame.src = "modulos/grupo1_productos/modulo_productos_admin.html"; 
+                    break;
+                case 'seller':
+                    title.innerText = "Módulo de Productos";
+                    frame.src = "modulos/grupo1_productos/modulo_productos_vendedor.html";
+                    break;
+                default:
+                    frame.src = "";
+            }
+        }
+
+    
+
     </script>
 </body>
 </html>
