@@ -304,7 +304,7 @@
             document.getElementById('dashboard-screen').classList.add('active');
 
             // Cargar por defecto el módulo de productos
-            loadModuleProducts(this, currentRole === 'admin' ? 'admin' : 'seller');
+            loadModuleProducts(document.querySelector('sidebar-menu a'), currentRole === 'admin' ? 'admin' : 'seller');
         }
 
         function handleLogout() {
