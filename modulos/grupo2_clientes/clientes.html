@@ -511,6 +511,18 @@ let clientsDB = {
   "1234567890": { docType:"C.C.", idDisplay:"1.023.456.789", nombre:"Pepito Pérez", celular:"+57 312 456 7890", correo:"pepitoperez@mail.com", vip:true }
 };
 
+/* ---------- Log de seguridad (RBAC) ---------- */
+window.securityLog = [];
+function logSecurityEvent(action, granted, clientId){
+  window.securityLog.push({
+    timestamp: new Date().toISOString(),
+    role: currentRole,
+    action,
+    clientId: clientId || null,
+    granted
+  });
+}
+
 const rightPanel = document.getElementById('rightPanel');
 const docNumberInput = document.getElementById('docNumber');
 const errDoc = document.getElementById('errDoc');
@@ -606,7 +618,7 @@ function renderFound(client, banner, clientId){
         Cliente VIP</div>` : '');
 
   const nombreField = isAdmin
-    ? `<input class="edit-input" id="editNombre" type="text" value="${client.nombre}">`
+    ? `<input class="edit-input" id="editNombre" type="text" maxlength="100" value="${client.nombre}">`
     : `<span>${client.nombre}</span>`;
   const celularLocalDigits = onlyDigits(client.celular).slice(-10);
   const celularField = isAdmin
@@ -683,6 +695,12 @@ function handleSaveEdit(clientId){
   const client = clientsDB[clientId];
   if (!client) return;
 
+  if (currentRole !== 'admin'){
+    logSecurityEvent('update', false, clientId);
+    showToast('Acceso denegado: se requiere rol de administrador');
+    return;
+  }
+
   const editNombre = document.getElementById('editNombre');
   const editCelular = document.getElementById('editCelular');
   const editCorreo = document.getElementById('editCorreo');
@@ -696,8 +714,8 @@ function handleSaveEdit(clientId){
   const errEdit = document.getElementById('errEdit');
   const errEditText = document.getElementById('errEditText');
 
-  if (nombre.length < 3){
-    errEditText.textContent = 'Ingresa el nombre completo';
+  if (nombre.length < 3 || nombre.length > 100){
+    errEditText.textContent = 'El nombre debe tener entre 3 y 100 caracteres';
     errEdit.classList.remove('hidden');
     editNombre.classList.add('input-error');
     editNombre.focus();
@@ -723,6 +741,7 @@ function handleSaveEdit(clientId){
   client.celular = '+57 ' + formatPhone(celDigits);
   client.vip = editVip.checked;
 
+  logSecurityEvent('update', true, clientId);
   renderFound(client, 'updated', clientId);
 }
 
@@ -730,11 +749,18 @@ function handleDeleteClient(clientId){
   const client = clientsDB[clientId];
   if (!client) return;
 
+  if (currentRole !== 'admin'){
+    logSecurityEvent('delete', false, clientId);
+    showToast('Acceso denegado: se requiere rol de administrador');
+    return;
+  }
+
   const confirmado = window.confirm(`¿Seguro que deseas eliminar a ${client.nombre}? Esta acción no se puede deshacer.`);
   if (!confirmado) return;
 
   delete clientsDB[clientId];
   docNumberInput.value = '';
+  logSecurityEvent('delete', true, clientId);
   showToast('Cliente eliminado');
   renderEmpty();
 }
@@ -759,14 +785,14 @@ function openCreateForm(idText){
       <input id="formId" type="text" inputmode="numeric" value="${idText}" maxlength="13" class="readonly-input">
       <div class="field-error hidden" id="errFormId">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-        <span>El ID debe tener entre 6 y 10 dígitos</span>
+        <span id="errFormIdText">El ID debe tener entre 6 y 10 dígitos</span>
       </div>
 
       <label>Nombre Completo</label>
-      <input id="formNombre" type="text" placeholder="Nombre y apellido">
+      <input id="formNombre" type="text" placeholder="Nombre y apellido" maxlength="100">
       <div class="field-error hidden" id="errNombre">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-        <span>Ingresa el nombre completo</span>
+        <span id="errNombreText">Ingresa el nombre completo</span>
       </div>
 
       <label>Correo electrónico</label>
@@ -837,12 +863,21 @@ function handleCreateSubmit(){
   let firstInvalid = null;
 
   const idDigits = onlyDigits(formId.value);
+  document.getElementById('errFormIdText').textContent = 'El ID debe tener entre 6 y 10 dígitos';
   if (idDigits.length < 6 || idDigits.length > 10){
+    setFieldError(formId, 'errFormId');
+    valid = false; firstInvalid = firstInvalid || formId;
+  } else if (clientsDB[idDigits]){
+    document.getElementById('errFormIdText').textContent = 'Ya existe un cliente con esta identificación';
     setFieldError(formId, 'errFormId');
     valid = false; firstInvalid = firstInvalid || formId;
   }
 
-  if (formNombre.value.trim().length < 3){
+  const nombreLength = formNombre.value.trim().length;
+  document.getElementById('errNombreText').textContent = nombreLength > 100
+    ? 'El nombre no debe superar los 100 caracteres'
+    : 'Ingresa el nombre completo';
+  if (nombreLength < 3 || nombreLength > 100){
     setFieldError(formNombre, 'errNombre');
     valid = false; firstInvalid = firstInvalid || formNombre;
   }
